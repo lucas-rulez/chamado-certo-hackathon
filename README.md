@@ -41,8 +41,9 @@ Não precisa instalar nada.
 3. Adicione insumos aos slots, escolha canal e objetivo.
 4. Veja o contexto montado e gere a peça na aba **Entregável**.
 
-Os dados são fictícios (cidades A, B e C). `banco-insumos.html` é a primeira versão (só monta o contexto) e
-`__exemplo/catalogo.html` é a tela do produto usada no slot Telas.
+Os dados são fictícios (cidades A, B e C). `banco-insumos.html` é a primeira versão (só monta o contexto).
+As telas do produto usadas no slot Telas ficam em `__exemplo/`: o catálogo de serviços (`catalogo.html`) e a
+solicitação de processo (`solicitacao.html`), ambas anonimizadas como "Cidade XPTO".
 
 ## INSTRUCTIONS (o que o agente segue)
 
@@ -68,7 +69,8 @@ Em produção, cada arquivo é o prompt da sua etapa e os agentes de coleta puxa
 ```
 banco-insumos-builder.html   tela principal (insumos → composição → entregável)
 banco-insumos.html           primeira versão (insumos → contexto)
-__exemplo/catalogo.html      tela do produto usada no slot Telas
+__exemplo/catalogo.html      tela do produto: catálogo de serviços (slot Telas)
+__exemplo/solicitacao.html   tela do produto: solicitação de processo (slot Telas)
 INSTRUCTIONS/                instruções do agente, uma por etapa
 nova-compra.html, css/, js/  template base de editor com régua validadora
 ```
