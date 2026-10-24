@@ -1,0 +1,1273 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banco de Insumos — Aprova</title>
+
+    <style>
+      /* ============ Tokens (extraídos de nova-compra.html / styles.css / nova-compra.css) ============ */
+      :root {
+        --accent: #4a274f;
+        --accent-50: #f6f4f6;
+        --accent-100: #ede9ed;
+        --accent-200: #d2c9d3;
+        --accent-300: #b7a9b9;
+        --accent-400: #806884;
+        --accent-600: #3f2143;
+        --accent-700: #341b37;
+
+        --zinc-50: #fafafa;
+        --zinc-100: #f4f4f5;
+        --zinc-200: #e4e4e7;
+        --zinc-300: #d4d4d8;
+        --zinc-400: #a1a1aa;
+        --zinc-500: #71717a;
+        --zinc-600: #52525b;
+        --zinc-700: #3f3f46;
+        --zinc-800: #27272a;
+        --zinc-900: #18181b;
+
+        --red-50: #fef2f2;
+        --red-200: #fecaca;
+        --red-300: #fca5a5;
+        --red-500: #ef4444;
+        --red-600: #dc2626;
+        --red-700: #b91c1c;
+        --red-900: #7f1d1d;
+
+        /* Aviso (âmbar) e positivo (verde): não existem no original; mesma família de paleta Tailwind */
+        --amber-50: #fffbeb;
+        --amber-200: #fde68a;
+        --amber-700: #b45309;
+        --amber-900: #78350f;
+        --green-50: #ecfdf5;
+        --green-200: #a7f3d0;
+        --green-700: #047857;
+
+        /* Cor de identificação por agente */
+        --ag-personas: #4a274f;
+        --ag-noticias: #0369a1;
+        --ag-metricas: #047857;
+        --ag-design: #4338ca;
+        --ag-sinais: #be123c;
+
+        --radius-sm: 0.375rem;
+        --radius: 0.5rem;
+        --radius-card: 0.625rem;
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      }
+
+      * { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #d4d4d8 transparent; }
+      *::-webkit-scrollbar { width: 8px; height: 8px; }
+      *::-webkit-scrollbar-thumb { background-color: #d4d4d8; border-radius: 9999px; }
+      *::-webkit-scrollbar-track { background: transparent; }
+
+      html, body { height: 100%; margin: 0; }
+      body {
+        display: flex;
+        flex-direction: column;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+        background: #fff;
+        color: var(--zinc-900);
+        -webkit-font-smoothing: antialiased;
+        font-size: 0.875rem;
+      }
+      button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+      button:disabled { cursor: not-allowed; }
+      input, select, textarea { font: inherit; color: inherit; }
+      :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      h1, h2, h3, p, ul { margin: 0; padding: 0; }
+      ul { list-style: none; }
+      svg { flex-shrink: 0; }
+      .ico { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .hidden { display: none !important; }
+
+      /* ============ Barra superior ============ */
+      .topbar {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem;
+        flex-shrink: 0; padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--zinc-200); background: #fff;
+      }
+      .topbar img { height: 1.5rem; width: auto; }
+      .topbar-title { font-size: 0.875rem; font-weight: 600; color: var(--zinc-800); padding-left: 0.75rem; border-left: 1px solid var(--zinc-200); }
+      .topbar-spacer { flex: 1; }
+
+      .field-box {
+        display: flex; align-items: center; gap: 0.5rem;
+        border: 1px solid var(--zinc-300); border-radius: var(--radius); background: #fff;
+        padding: 0.375rem 0.625rem; color: var(--zinc-500);
+        transition: border-color 150ms ease;
+      }
+      .field-box:focus-within { border-color: var(--accent); }
+      .field-box input, .field-box select {
+        border: 0; outline: none; background: transparent; font-size: 0.875rem; color: var(--zinc-900); min-width: 0;
+      }
+      .field-box input::placeholder { color: var(--zinc-400); }
+      .field-box label { font-size: 0.75rem; font-weight: 500; color: var(--zinc-500); white-space: nowrap; }
+      .search-box { width: 16rem; }
+      .search-box input { width: 100%; }
+
+      .counter-btn {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        border: 1px solid var(--zinc-200); border-radius: var(--radius); padding: 0.375rem 0.75rem;
+        font-size: 0.8125rem; color: var(--zinc-600); transition: border-color 150ms ease, color 150ms ease;
+      }
+      .counter-btn:hover { border-color: var(--accent); color: var(--accent); }
+      .counter-btn b { color: var(--accent); font-weight: 700; }
+
+      /* ============ Tabs mobile ============ */
+      .mtabs { display: none; flex-shrink: 0; gap: 0.25rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--zinc-200); background: #fff; }
+      .mtab {
+        flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.375rem;
+        padding: 0.5rem 0.5rem; border-radius: var(--radius); font-size: 0.8125rem; font-weight: 500; color: var(--zinc-600);
+        transition: background-color 150ms ease;
+      }
+      .mtab:hover { background: var(--zinc-100); }
+      .mtab.active { background: var(--accent); color: #fff; }
+      .mtab .pill { background: rgba(255,255,255,.2); border-radius: 9999px; padding: 0 0.375rem; font-size: 0.6875rem; font-weight: 700; }
+      .mtab:not(.active) .pill { background: var(--accent-100); color: var(--accent); }
+
+      /* ============ Layout 3 colunas ============ */
+      .app { display: grid; grid-template-columns: 21.5rem minmax(0, 1fr) 24rem; flex: 1; min-height: 0; }
+      .col { min-height: 0; overflow-y: auto; }
+      .col-bank { border-right: 1px solid var(--zinc-200); background: var(--zinc-50); }
+      .col-comp { background: #fff; }
+      .col-ctx { border-left: 1px solid var(--zinc-200); background: var(--zinc-50); }
+      .col-inner { padding: 1rem 1.25rem 2rem; }
+      .col-title { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--zinc-500); margin-bottom: 0.625rem; }
+
+      /* ============ Banco de insumos: seções colapsáveis por agente ============ */
+      .agent-sec { border: 1px solid var(--zinc-200); border-radius: var(--radius-card); background: #fff; margin-bottom: 0.625rem; overflow: hidden; }
+      .agent-head { display: flex; align-items: center; gap: 0.625rem; width: 100%; padding: 0.625rem 0.75rem; text-align: left; transition: background-color 150ms ease; }
+      .agent-head:hover { background: var(--zinc-50); }
+      .agent-ico { display: flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem; border-radius: var(--radius-sm); color: var(--ag); background: color-mix(in srgb, var(--ag) 10%, #fff); }
+      .agent-meta { flex: 1; min-width: 0; }
+      .agent-name { font-size: 0.8125rem; font-weight: 600; color: var(--zinc-800); }
+      .agent-sub { font-size: 0.6875rem; color: var(--zinc-500); }
+      .agent-count { font-size: 0.6875rem; font-weight: 700; color: var(--ag); background: color-mix(in srgb, var(--ag) 10%, #fff); border-radius: 9999px; padding: 0.0625rem 0.5rem; }
+      .agent-chev { color: var(--zinc-400); transition: transform 150ms ease; }
+      .agent-sec.open .agent-chev { transform: rotate(180deg); }
+      .agent-body { display: none; padding: 0.5rem 0.625rem 0.625rem; border-top: 1px solid var(--zinc-200); background: var(--zinc-50); }
+      .agent-sec.open .agent-body { display: flex; flex-direction: column; gap: 0.5rem; }
+      .agent-empty { font-size: 0.75rem; color: var(--zinc-500); text-align: center; padding: 0.75rem 0.5rem; }
+
+      /* Card de insumo */
+      .card {
+        position: relative; border: 1px solid var(--zinc-200); border-left: 3px solid var(--ag); border-radius: var(--radius-card);
+        background: #fff; padding: 0.625rem 0.75rem; cursor: grab; transition: border-color 150ms ease, opacity 150ms ease;
+      }
+      .card:hover { border-color: var(--accent-300); border-left-color: var(--ag); }
+      .card:active { cursor: grabbing; }
+      .card.dragging { opacity: 0.4; }
+      .card.in-comp { background: var(--accent-50); }
+      .card-top { display: flex; align-items: flex-start; gap: 0.5rem; }
+      .card-title { flex: 1; min-width: 0; font-size: 0.8125rem; font-weight: 600; color: var(--zinc-900); line-height: 1.35; }
+      .card-sub { font-size: 0.75rem; color: var(--zinc-600); margin-top: 0.125rem; }
+      .card-text { font-size: 0.75rem; color: var(--zinc-600); margin-top: 0.375rem; line-height: 1.45; }
+      .card-kv { display: grid; grid-template-columns: auto 1fr; gap: 0.125rem 0.5rem; margin-top: 0.375rem; font-size: 0.75rem; }
+      .card-kv dt { color: var(--zinc-500); }
+      .card-kv dd { margin: 0; color: var(--zinc-800); min-width: 0; overflow-wrap: anywhere; }
+      .card-kv a, .card-text a { color: var(--accent); text-decoration: none; }
+      .card-kv a:hover, .card-text a:hover { text-decoration: underline; }
+      .card-foot { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--zinc-100); }
+      .card-uses { flex: 1; font-size: 0.6875rem; color: var(--zinc-500); }
+      .tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.375rem; }
+
+      .badge-agent {
+        display: inline-flex; align-items: center; gap: 0.25rem; flex-shrink: 0;
+        font-size: 0.625rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+        color: var(--ag); background: color-mix(in srgb, var(--ag) 10%, #fff); border-radius: 9999px; padding: 0.125rem 0.5rem 0.125rem 0.375rem;
+      }
+      .tag {
+        display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.6875rem; font-weight: 500;
+        border: 1px solid var(--zinc-200); background: var(--zinc-50); color: var(--zinc-600); border-radius: var(--radius-sm); padding: 0.0625rem 0.375rem;
+      }
+      .tag.ok { background: var(--green-50); border-color: var(--green-200); color: var(--green-700); }
+      .tag.bad { background: var(--red-50); border-color: var(--red-200); color: var(--red-700); }
+      .tag.warn { background: var(--amber-50); border-color: var(--amber-200); color: var(--amber-700); }
+      .tag.accent { background: var(--accent-50); border-color: var(--accent-200); color: var(--accent); }
+
+      .btn-add {
+        display: inline-flex; align-items: center; gap: 0.25rem; flex-shrink: 0;
+        border: 1px dashed var(--zinc-300); border-radius: var(--radius-sm); padding: 0.25rem 0.5rem;
+        font-size: 0.75rem; color: var(--zinc-500); transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+      }
+      .btn-add:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-50); }
+      .btn-add:disabled { opacity: 0.6; border-style: solid; border-color: var(--zinc-200); background: var(--zinc-100); }
+
+      /* Thumbnail estilizada (placeholder) */
+      .thumb { position: relative; height: 5.5rem; margin-top: 0.5rem; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--accent-200); background: linear-gradient(135deg, var(--accent-100), var(--accent-50)); padding: 0.5rem; display: flex; flex-direction: column; gap: 0.3125rem; }
+      .thumb i { display: block; height: 0.375rem; border-radius: 9999px; background: var(--accent-300); opacity: 0.7; }
+      .thumb .blk { flex: 1; display: flex; gap: 0.3125rem; }
+      .thumb .blk b { flex: 1; border-radius: 0.25rem; background: #fff; border: 1px solid var(--accent-200); }
+      .thumb .blk b:nth-child(odd) { background: var(--accent-200); border-color: var(--accent-300); }
+      .thumb.v1 .blk b:nth-child(1) { flex: 2; }
+      .thumb.v2 .blk { flex-direction: column; }
+      .thumb.v3 .blk b:nth-child(2) { flex: 2; }
+      .thumb .play { position: absolute; right: 0.5rem; bottom: 0.5rem; display: flex; align-items: center; gap: 0.25rem; background: var(--accent); color: #fff; border-radius: 9999px; font-size: 0.6875rem; font-weight: 600; padding: 0.125rem 0.5rem 0.125rem 0.375rem; }
+
+      /* ============ Composição ============ */
+      .slots { display: flex; flex-direction: column; gap: 0.75rem; }
+      .slot {
+        --ag: var(--accent);
+        border: 1px dashed var(--zinc-300); border-radius: var(--radius-card); background: #fff; padding: 0.625rem 0.75rem 0.75rem;
+        transition: border-color 150ms ease, background-color 150ms ease, opacity 150ms ease;
+      }
+      .slot.filled { border-style: solid; border-color: var(--zinc-200); background: var(--zinc-50); }
+      .slot-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+      .slot-name { font-size: 0.8125rem; font-weight: 600; color: var(--zinc-800); }
+      .slot-req { font-size: 0.6875rem; font-weight: 600; color: var(--red-600); }
+      .slot-cap { margin-left: auto; font-size: 0.6875rem; font-weight: 600; color: var(--zinc-500); }
+      .slot.is-full .slot-cap { color: var(--accent); }
+      .slot-list { display: flex; flex-direction: column; gap: 0.375rem; }
+      .slot-empty { font-size: 0.75rem; color: var(--zinc-500); padding: 0.375rem 0.125rem; }
+
+      /* Estados de arraste do slot */
+      body.is-dragging .slot.valid { border-style: dashed; border-color: var(--accent); background: var(--accent-50); }
+      body.is-dragging .slot.valid.over { border-style: solid; background: var(--accent-100); }
+      body.is-dragging .slot.invalid { opacity: 0.35; }
+      body.is-dragging .slot.full-block { opacity: 0.55; border-color: var(--zinc-300); background: var(--zinc-100); }
+      .slot-flag { display: none; font-size: 0.6875rem; font-weight: 600; }
+      body.is-dragging .slot.valid .slot-flag.f-ok,
+      body.is-dragging .slot.full-block .slot-flag.f-full,
+      body.is-dragging .slot.invalid .slot-flag.f-bad { display: inline; }
+      .f-ok { color: var(--accent); }
+      .f-full { color: var(--zinc-600); }
+      .f-bad { color: var(--zinc-500); }
+
+      .slot-item {
+        position: relative; display: flex; align-items: center; gap: 0.375rem;
+        background: #fff; border: 1px solid var(--zinc-200); border-left: 3px solid var(--ag); border-radius: var(--radius); padding: 0.375rem 0.5rem;
+      }
+      .slot-item.dragging { opacity: 0.4; }
+      .slot-item.drag-over-top { box-shadow: inset 0 2px 0 0 var(--accent); }
+      .slot-item.drag-over-bottom { box-shadow: inset 0 -2px 0 0 var(--accent); }
+      .slot-item .grip { color: var(--zinc-400); cursor: grab; display: flex; }
+      .slot-item .grip:active { cursor: grabbing; }
+      .si-main { flex: 1; min-width: 0; }
+      .si-title { font-size: 0.8125rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .si-sub { font-size: 0.6875rem; color: var(--zinc-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .si-ctrl { display: flex; align-items: center; gap: 0.125rem; opacity: 0; transition: opacity 120ms ease; }
+      .slot-item:hover .si-ctrl, .slot-item:focus-within .si-ctrl { opacity: 1; }
+      .ico-btn { display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: var(--radius-sm); color: var(--zinc-400); transition: color 120ms ease, background-color 120ms ease; }
+      .ico-btn:hover:not(:disabled) { color: var(--accent); background: var(--accent-100); }
+      .ico-btn.del:hover:not(:disabled) { color: var(--red-500); background: var(--red-50); }
+      .ico-btn:disabled { opacity: 0.35; }
+      .si-warn { display: flex; color: var(--amber-700); }
+      .si-warn.strong { color: var(--red-600); }
+
+      /* Campos de geração */
+      .gen { margin-top: 1.25rem; border: 1px solid var(--zinc-200); border-radius: var(--radius-card); background: var(--zinc-50); padding: 0.75rem 0.75rem 0.5rem; }
+      .gen-title { font-size: 0.8125rem; font-weight: 600; color: var(--zinc-800); margin-bottom: 0.375rem; }
+      .gen-group { padding: 0.375rem 0; }
+      .gen-label { font-size: 0.75rem; font-weight: 500; color: var(--zinc-500); margin-bottom: 0.125rem; }
+      .opcoes { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+      .opcao { display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.8125rem; color: var(--zinc-600); }
+      .opcao:hover { background: #fff; }
+      .opcao.sel { color: var(--zinc-900); font-weight: 500; }
+      .marcador { position: relative; width: 14px; height: 14px; border-radius: 9999px; border: 2px solid var(--zinc-300); }
+      .opcao.sel .marcador { border-color: var(--accent); }
+      .opcao.sel .marcador::after { content: ""; position: absolute; inset: 2px; border-radius: 9999px; background: var(--accent); }
+      .obs {
+        width: 100%; min-height: 4.5rem; resize: vertical; border: 1px solid var(--zinc-300); border-radius: var(--radius); background: #fff;
+        padding: 0.5rem 0.625rem; font-size: 0.875rem; outline: none; line-height: 1.5;
+      }
+      .obs:focus { border-color: var(--accent); }
+      .obs::placeholder { color: var(--zinc-400); }
+
+      /* Alertas */
+      .alerts { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+      .alert { border: 1px solid; border-radius: var(--radius); padding: 0.625rem 0.875rem; animation: alerta-entrada 320ms ease; transform-origin: top; }
+      @keyframes alerta-entrada { from { opacity: 0; transform: translateY(-8px) scaleY(0.96); } to { opacity: 1; transform: translateY(0) scaleY(1); } }
+      .alert-title { display: flex; align-items: center; gap: 0.375rem; font-size: 0.8125rem; font-weight: 700; }
+      .alert-text { margin-top: 0.25rem; font-size: 0.8125rem; line-height: 1.45; }
+      .alert-act { margin-top: 0.5rem; }
+      .alert.block { background: var(--red-50); border-color: var(--red-300); border-width: 2px; color: var(--red-900); }
+      .alert.block .alert-title { color: var(--red-700); }
+      .alert.strong { background: var(--red-50); border-color: var(--red-200); color: var(--red-900); }
+      .alert.strong .alert-title { color: var(--red-700); }
+      .alert.warn { background: var(--amber-50); border-color: var(--amber-200); color: var(--amber-900); }
+      .alert.warn .alert-title { color: var(--amber-700); }
+      .alert.info { background: var(--accent-50); border-color: var(--accent); color: var(--zinc-600); }
+      .alert.info .alert-title { color: var(--accent); }
+      .alert-btn { text-align: left; font-size: 0.8125rem; color: var(--accent); background: #fff; border: 1px solid var(--accent-200); border-radius: var(--radius-sm); padding: 0.375rem 0.625rem; transition: background-color 150ms ease, border-color 150ms ease; }
+      .alert-btn:hover { background: var(--accent-100); border-color: var(--accent); }
+
+      /* ============ Contexto ============ */
+      .ctx-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+      .btn-primary { border-radius: var(--radius); background: var(--accent); color: #fff; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; transition: background-color 150ms ease; }
+      .btn-primary:hover:not(:disabled) { background: var(--accent-600); }
+      .btn-primary:disabled { background: var(--zinc-300); color: var(--zinc-500); }
+      .btn-secondary { border-radius: var(--radius); border: 1px solid var(--zinc-300); background: #fff; color: var(--zinc-700); padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; transition: border-color 150ms ease, color 150ms ease; }
+      .btn-secondary:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+      .btn-secondary:disabled { opacity: 0.5; }
+      .ctx-status { margin-top: 0.5rem; font-size: 0.75rem; }
+      .ctx-status.blocked { color: var(--red-700); font-weight: 500; }
+      .ctx-status.ok { color: var(--green-700); }
+      .ctx-preview {
+        margin-top: 0.75rem; border: 1px solid var(--zinc-200); border-radius: var(--radius-card); background: #fff;
+        padding: 0.75rem 0.875rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem; line-height: 1.6;
+        white-space: pre-wrap; overflow-wrap: anywhere; color: var(--zinc-800); max-height: 32rem; overflow-y: auto;
+      }
+      .ctx-preview .h { font-weight: 700; color: var(--accent); }
+      .ctx-preview .mute { color: var(--zinc-400); }
+      .save-row { margin-top: 0.75rem; display: flex; gap: 0.5rem; }
+      .save-row .field-box { flex: 1; min-width: 0; }
+      .save-row .field-box input { width: 100%; }
+
+      .saved { margin-top: 1.5rem; }
+      .saved-item { display: flex; align-items: center; gap: 0.5rem; width: 100%; text-align: left; border: 1px solid var(--zinc-200); border-radius: var(--radius-card); background: #fff; padding: 0.5rem 0.625rem; margin-bottom: 0.375rem; transition: border-color 150ms ease, background-color 150ms ease; cursor: pointer; }
+      .saved-item:hover { border-color: var(--accent); background: var(--accent-50); }
+      .saved-item.current { border-color: var(--accent); background: var(--accent-50); }
+      .saved-main { flex: 1; min-width: 0; }
+      .saved-name { font-size: 0.8125rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .saved-meta { font-size: 0.6875rem; color: var(--zinc-500); }
+      .saved-empty { font-size: 0.75rem; color: var(--zinc-500); border: 1px dashed var(--zinc-300); border-radius: var(--radius-card); padding: 0.75rem; text-align: center; }
+
+      /* Toast */
+      #toast { position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 50; max-width: calc(100vw - 3rem); pointer-events: none; transform: translateY(0.5rem); opacity: 0; border-radius: var(--radius); background: var(--zinc-900); color: #fff; padding: 0.625rem 1rem; font-size: 0.875rem; box-shadow: var(--shadow-lg); transition: opacity 150ms ease, transform 150ms ease; }
+      #toast.show { opacity: 1; transform: translateY(0); }
+
+      /* ============ Responsivo ============ */
+      @media (hover: none) { .si-ctrl { opacity: 1; } }
+      @media (max-width: 1100px) {
+        .mtabs { display: flex; }
+        .app { display: block; position: relative; }
+        .col { height: 100%; display: none; border: 0; }
+        .app[data-pane="bank"] .col-bank,
+        .app[data-pane="comp"] .col-comp,
+        .app[data-pane="ctx"] .col-ctx { display: block; }
+        .app { overflow: hidden; }
+        .search-box { width: 100%; order: 5; }
+        .topbar-title { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Barra superior -->
+    <header class="topbar">
+      <img src="img/aprova-wordmark-dark.svg" alt="Aprova" />
+      <span class="topbar-title">Banco de Insumos</span>
+
+      <div class="field-box">
+        <svg class="ico" width="15" height="15" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <label for="sel-cidade">Cidade-alvo</label>
+        <select id="sel-cidade"></select>
+      </div>
+
+      <div class="field-box search-box">
+        <svg class="ico" width="15" height="15" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="busca" type="search" placeholder="Buscar nos insumos…" aria-label="Buscar nos insumos" />
+      </div>
+
+      <span class="topbar-spacer"></span>
+      <button id="btn-contador" type="button" class="counter-btn" title="Ir para as combinações salvas">
+        Combinações salvas <b id="contador">0</b>
+      </button>
+    </header>
+
+    <!-- Navegação mobile -->
+    <nav class="mtabs" aria-label="Seções">
+      <button type="button" class="mtab active" data-pane="bank">Insumos</button>
+      <button type="button" class="mtab" data-pane="comp">Composição <span class="pill" id="pill-comp">0</span></button>
+      <button type="button" class="mtab" data-pane="ctx">Contexto</button>
+    </nav>
+
+    <div class="app" id="app" data-pane="bank">
+      <!-- Coluna esquerda: Banco de Insumos -->
+      <aside class="col col-bank" id="col-bank">
+        <div class="col-inner">
+          <h2 class="col-title">Banco de Insumos</h2>
+          <div id="bank"></div>
+        </div>
+      </aside>
+
+      <!-- Coluna central: Composição -->
+      <main class="col col-comp" id="col-comp">
+        <div class="col-inner">
+          <h2 class="col-title">Composição</h2>
+          <div class="slots" id="slots"></div>
+
+          <section class="gen" aria-label="Campos de geração">
+            <h3 class="gen-title">Geração</h3>
+            <div class="gen-group">
+              <div class="gen-label">Canal</div>
+              <div class="opcoes" id="opt-canal"></div>
+            </div>
+            <div class="gen-group">
+              <div class="gen-label">Objetivo</div>
+              <div class="opcoes" id="opt-objetivo"></div>
+            </div>
+            <div class="gen-group">
+              <label class="gen-label" for="obs">Observações livres</label>
+              <textarea id="obs" class="obs" placeholder="Ex.: mencionar a visita da equipe na semana passada; tom mais direto…"></textarea>
+            </div>
+          </section>
+
+          <div class="alerts" id="alerts" aria-live="polite"></div>
+        </div>
+      </main>
+
+      <!-- Coluna direita: Contexto Montado -->
+      <aside class="col col-ctx" id="col-ctx">
+        <div class="col-inner">
+          <h2 class="col-title">Contexto montado</h2>
+          <div class="ctx-actions">
+            <button type="button" class="btn-primary" id="btn-copiar">Copiar contexto</button>
+            <button type="button" class="btn-secondary" id="btn-limpar">Limpar</button>
+          </div>
+          <p class="ctx-status" id="ctx-status"></p>
+
+          <pre class="ctx-preview" id="ctx-preview"></pre>
+
+          <div class="save-row">
+            <div class="field-box">
+              <input id="nome-comb" type="text" placeholder="Nome da combinação (opcional)" aria-label="Nome da combinação" />
+            </div>
+            <button type="button" class="btn-secondary" id="btn-salvar">Salvar combinação</button>
+          </div>
+
+          <section class="saved" id="saved-sec">
+            <h2 class="col-title">Combinações salvas</h2>
+            <div id="saved-list"></div>
+          </section>
+        </div>
+      </aside>
+    </div>
+
+    <div id="toast" role="status"></div>
+
+    <script>
+      /* =====================================================================
+         DADOS MOCK — tudo fictício. Edite à vontade; a tela lê só este objeto.
+         Datas em ISO (AAAA-MM-DD). "hoje" do mock: 24/10/2026.
+         ===================================================================== */
+      const DB = {
+        cidades: {
+          A: { nome: "Cidade A – PR", habitantes: "120 mil hab." },
+          B: { nome: "Cidade B – MG", habitantes: "65 mil hab." },
+          C: { nome: "Cidade C – SP", habitantes: "240 mil hab." },
+        },
+
+        agentes: {
+          personas: { nome: "Agente Personas",         curto: "Persona",       slot: "destinatario", ultimaColeta: "2026-10-22" },
+          noticias: { nome: "Agente Notícias/Problemas", curto: "Notícia",     slot: "gancho",       ultimaColeta: "2026-10-24" },
+          metricas: { nome: "Agente Métricas",         curto: "Métrica",       slot: "prova",        ultimaColeta: "2026-10-20" },
+          design:   { nome: "Agente Design",           curto: "Design",        slot: "visual",       ultimaColeta: "2026-10-18" },
+          sinais:   { nome: "Agente Sinais de Compra", curto: "Sinal de compra", slot: "momento",    ultimaColeta: "2026-10-23" },
+        },
+
+        personas: [
+          // ---- Cidade A ----
+          { id: "p-a1", cidade: "A", nome: "Helena Duarte",   cargo: "Secretária de Administração",        secretaria: "Sec. de Administração", email: "helena.duarte@cidadea.pr.gov.br",   whatsapp: "(41) 99100-0101", optin: true,  fonte: "Diário Oficial",             link: "https://diario.cidadea.pr.gov.br/edicao/4821", verificadoEm: "2026-10-15", usos: 2 },
+          { id: "p-a2", cidade: "A", nome: "Rogério Tavares", cargo: "Diretor de Compras e Licitações",    secretaria: "Sec. de Administração", email: "rogerio.tavares@cidadea.pr.gov.br", whatsapp: "(41) 99100-0102", optin: false, fonte: "Portal da transparência",    link: "https://transparencia.cidadea.pr.gov.br/servidores", verificadoEm: "2026-10-12", usos: 1 },
+          { id: "p-a3", cidade: "A", nome: "Camila Prado",    cargo: "Pregoeira / Coord. de Licitações",   secretaria: "Sec. de Administração", email: "camila.prado@cidadea.pr.gov.br",    whatsapp: "(41) 99100-0103", optin: true,  fonte: "Diário Oficial",             link: "https://diario.cidadea.pr.gov.br/edicao/4790", verificadoEm: "2026-10-10", usos: 0 },
+          { id: "p-a4", cidade: "A", nome: "Marcos Vilela",   cargo: "Secretário de Saúde",                secretaria: "Sec. de Saúde",         email: "marcos.vilela@cidadea.pr.gov.br",   whatsapp: "(41) 99100-0104", optin: true,  fonte: "Portal da transparência",    link: "https://transparencia.cidadea.pr.gov.br/servidores", verificadoEm: "2026-10-18", usos: 0 },
+          { id: "p-a5", cidade: "A", nome: "Patrícia Nunes",  cargo: "Controladora-Geral",                 secretaria: "Controladoria-Geral",   email: "patricia.nunes@cidadea.pr.gov.br",  whatsapp: "(41) 99100-0105", optin: false, fonte: "Diário Oficial",             link: "https://diario.cidadea.pr.gov.br/edicao/4766", verificadoEm: "2026-09-30", usos: 0 },
+          // ---- Cidade B ----
+          { id: "p-b1", cidade: "B", nome: "Antônio Cardoso", cargo: "Secretário de Finanças",             secretaria: "Sec. de Finanças",      email: "antonio.cardoso@cidadeb.mg.gov.br", whatsapp: "(31) 99200-0201", optin: true,  fonte: "Diário Oficial",             link: "https://diario.cidadeb.mg.gov.br/edicao/1204", verificadoEm: "2026-10-19", usos: 1 },
+          { id: "p-b2", cidade: "B", nome: "Luciana Barros",  cargo: "Diretora de Compras",                secretaria: "Sec. de Administração", email: "luciana.barros@cidadeb.mg.gov.br",  whatsapp: "(31) 99200-0202", optin: false, fonte: "Portal da transparência",    link: "https://transparencia.cidadeb.mg.gov.br/servidores", verificadoEm: "2026-10-05", usos: 0 },
+          { id: "p-b3", cidade: "B", nome: "Fábio Teixeira",  cargo: "Secretário de Obras",                secretaria: "Sec. de Obras",         email: "fabio.teixeira@cidadeb.mg.gov.br",  whatsapp: "(31) 99200-0203", optin: true,  fonte: "Diário Oficial",             link: "https://diario.cidadeb.mg.gov.br/edicao/1190", verificadoEm: "2026-10-02", usos: 0 },
+          { id: "p-b4", cidade: "B", nome: "Sandra Meireles", cargo: "Secretária de Educação",             secretaria: "Sec. de Educação",      email: "sandra.meireles@cidadeb.mg.gov.br", whatsapp: "(31) 99200-0204", optin: true,  fonte: "Portal da transparência",    link: "https://transparencia.cidadeb.mg.gov.br/servidores", verificadoEm: "2026-10-16", usos: 0 },
+          // ---- Cidade C ----
+          { id: "p-c1", cidade: "C", nome: "Eduardo Lacerda", cargo: "Secretário de Planejamento e Gestão", secretaria: "Sec. de Planejamento", email: "eduardo.lacerda@cidadec.sp.gov.br", whatsapp: "(11) 99300-0301", optin: true,  fonte: "Diário Oficial",             link: "https://diario.cidadec.sp.gov.br/edicao/9017", verificadoEm: "2026-10-21", usos: 3 },
+          { id: "p-c2", cidade: "C", nome: "Beatriz Monteiro", cargo: "Coordenadora de Contratos",         secretaria: "Sec. de Planejamento",  email: "beatriz.monteiro@cidadec.sp.gov.br", whatsapp: "(11) 99300-0302", optin: true, fonte: "Portal da transparência",    link: "https://transparencia.cidadec.sp.gov.br/servidores", verificadoEm: "2026-10-14", usos: 0 },
+          { id: "p-c3", cidade: "C", nome: "Ricardo Fontes",  cargo: "Secretário de Saúde",                secretaria: "Sec. de Saúde",         email: "ricardo.fontes@cidadec.sp.gov.br",  whatsapp: "(11) 99300-0303", optin: false, fonte: "Diário Oficial",             link: "https://diario.cidadec.sp.gov.br/edicao/8990", verificadoEm: "2026-10-09", usos: 0 },
+          { id: "p-c4", cidade: "C", nome: "Tânia Albuquerque", cargo: "Controladora Municipal",           secretaria: "Controladoria",         email: "tania.albuquerque@cidadec.sp.gov.br", whatsapp: "(11) 99300-0304", optin: false, fonte: "Portal da transparência",  link: "https://transparencia.cidadec.sp.gov.br/servidores", verificadoEm: "2026-10-01", usos: 0 },
+          { id: "p-c5", cidade: "C", nome: "Júlio Peixoto",   cargo: "Diretor de Tecnologia da Informação", secretaria: "Sec. de Planejamento", email: "julio.peixoto@cidadec.sp.gov.br",   whatsapp: "(11) 99300-0305", optin: true,  fonte: "Diário Oficial",             link: "https://diario.cidadec.sp.gov.br/edicao/9002", verificadoEm: "2026-10-17", usos: 0 },
+        ],
+
+        noticias: [
+          // ---- Cidade A ----
+          { id: "n-a1", cidade: "A", titulo: "Prefeitura tem 14 licitações desertas no ano", resumo: "Levantamento do portal da transparência aponta 14 pregões desertos ou fracassados em 2026, a maioria por falhas na especificação.", tema: "finanças", tom: "crítico",  fonte: "Portal da transparência", link: "https://transparencia.cidadea.pr.gov.br/licitacoes/resumo-2026", data: "2026-10-21", usos: 1 },
+          { id: "n-a2", cidade: "A", titulo: "UPAs da cidade passam por reforma e ampliação", resumo: "Investimento de R$ 8,2 milhões para reformar três UPAs. Obra prevê aumento de 30% na capacidade de atendimento.", tema: "saúde", tom: "positivo", fonte: "Agência Cidade A", link: "https://agencia.cidadea.pr.gov.br/saude/upas-reforma", data: "2026-10-20", usos: 0 },
+          { id: "n-a3", cidade: "A", titulo: "Câmara aprova LOA 2027 com foco em educação", resumo: "Orçamento de R$ 1,1 bilhão prevê 28% para educação e criação de fundo para tecnologia na rede.", tema: "finanças", tom: "neutro", fonte: "Câmara Municipal", link: "https://camara.cidadea.pr.gov.br/noticias/loa-2027", data: "2026-10-19", usos: 2 },
+          { id: "n-a4", cidade: "A", titulo: "Obra da avenida central está 4 meses atrasada", resumo: "Empresa contratada alega falta de aditivo; prefeitura diz que reavalia o contrato. Comerciantes reclamam de prejuízo.", tema: "obras", tom: "crítico", fonte: "Gazeta Regional", link: "https://gazetaregional.exemplo.com.br/cidade-a/obra-avenida", data: "2026-10-14", usos: 0 },
+          { id: "n-a5", cidade: "A", titulo: "Escolas municipais recebem 1.200 novos computadores", resumo: "Lote entregue pela Sec. de Educação atende 38 unidades. Prefeitura quer centralizar o inventário de equipamentos.", tema: "educação", tom: "positivo", fonte: "Agência Cidade A", link: "https://agencia.cidadea.pr.gov.br/educacao/computadores", data: "2026-10-09", usos: 0 },
+          { id: "n-a6", cidade: "A", titulo: "TCE recomenda planejamento anual de compras", resumo: "Relatório do tribunal sugere que municípios do porte de Cidade A adotem Plano de Contratações Anual (PCA) integrado.", tema: "finanças", tom: "neutro", fonte: "Diário Oficial", link: "https://diario.cidadea.pr.gov.br/edicao/4802", data: "2026-10-05", usos: 0 },
+          // ---- Cidade B ----
+          { id: "n-b1", cidade: "B", titulo: "Cidade B atinge 98% de cobertura vacinal infantil", resumo: "Meta nacional superada pelo segundo ano seguido, com destaque para busca ativa nas escolas.", tema: "saúde", tom: "positivo", fonte: "Prefeitura de Cidade B", link: "https://cidadeb.mg.gov.br/noticias/vacinacao-98", data: "2026-10-22", usos: 0 },
+          { id: "n-b2", cidade: "B", titulo: "Relatório do TCE aponta falhas em dispensas de licitação", resumo: "Auditoria encontrou 22 dispensas sem justificativa de preço em 2025, e recomenda revisão do fluxo interno.", tema: "finanças", tom: "crítico", fonte: "Diário Oficial", link: "https://diario.cidadeb.mg.gov.br/edicao/1201", data: "2026-10-17", usos: 1 },
+          { id: "n-b3", cidade: "B", titulo: "Chuvas danificam três pontes rurais", resumo: "Secretaria de Obras estima R$ 2,4 milhões em reparos e deve abrir processo emergencial.", tema: "obras", tom: "neutro", fonte: "Rádio Vale Sul", link: "https://radiovalesul.exemplo.com.br/pontes-rurais", data: "2026-10-12", usos: 0 },
+          { id: "n-b4", cidade: "B", titulo: "Merenda escolar: prefeitura amplia compra da agricultura familiar", resumo: "Cota sobe de 30% para 45% dos recursos do PNAE, com chamada pública prevista para novembro.", tema: "educação", tom: "positivo", fonte: "Prefeitura de Cidade B", link: "https://cidadeb.mg.gov.br/noticias/pnae-45", data: "2026-10-08", usos: 0 },
+          { id: "n-b5", cidade: "B", titulo: "Arrecadação própria cai 6% no trimestre", resumo: "Queda no ISS preocupa a Sec. de Finanças, que estuda cortar custos de manutenção e renegociar contratos.", tema: "finanças", tom: "neutro", fonte: "Portal da transparência", link: "https://transparencia.cidadeb.mg.gov.br/receitas", data: "2026-10-03", usos: 0 },
+          // ---- Cidade C ----
+          { id: "n-c1", cidade: "C", titulo: "Prefeitura lança plano de modernização digital", resumo: "Programa prevê integrar sistemas de gestão e reduzir o uso de papel em processos administrativos até 2028.", tema: "finanças", tom: "positivo", fonte: "Agência Cidade C", link: "https://agencia.cidadec.sp.gov.br/gestao/modernizacao-digital", data: "2026-10-23", usos: 2 },
+          { id: "n-c2", cidade: "C", titulo: "Fila de espera por exames ultrapassa 9 mil pacientes", resumo: "Oposição cobra explicações; Sec. de Saúde diz que a demanda reprimida cresceu após a pandemia.", tema: "saúde", tom: "crítico", fonte: "Jornal do Interior", link: "https://jornaldointerior.exemplo.com.br/cidade-c/fila-exames", data: "2026-10-20", usos: 0 },
+          { id: "n-c3", cidade: "C", titulo: "Ministério Público questiona contrato de limpeza urbana", resumo: "MP pede esclarecimentos sobre reajustes acima do índice previsto em aditivos de 2024 e 2025.", tema: "finanças", tom: "crítico", fonte: "Diário Oficial", link: "https://diario.cidadec.sp.gov.br/edicao/8995", data: "2026-10-16", usos: 0 },
+          { id: "n-c4", cidade: "C", titulo: "Novo terminal rodoviário será entregue em dezembro", resumo: "Obra está 85% concluída; investimento total de R$ 31 milhões, com recursos estaduais.", tema: "obras", tom: "neutro", fonte: "Agência Cidade C", link: "https://agencia.cidadec.sp.gov.br/obras/terminal", data: "2026-10-13", usos: 0 },
+          { id: "n-c5", cidade: "C", titulo: "Rede municipal terá ensino integral em 20 escolas", resumo: "Ampliação exige reorganizar contratos de merenda e transporte escolar para o próximo ano letivo.", tema: "educação", tom: "positivo", fonte: "Agência Cidade C", link: "https://agencia.cidadec.sp.gov.br/educacao/integral", data: "2026-10-07", usos: 0 },
+          { id: "n-c6", cidade: "C", titulo: "Prefeitura prepara pregão para renovar frota da saúde", resumo: "Edital deve ser publicado em novembro, com 18 veículos entre ambulâncias e utilitários.", tema: "saúde", tom: "neutro", fonte: "Portal da transparência", link: "https://transparencia.cidadec.sp.gov.br/licitacoes/planejadas", data: "2026-10-02", usos: 0 },
+        ],
+
+        metricas: [
+          { id: "m-1", cliente: "Município do PR, ~90 mil hab.",  indicador: "Tempo médio de uma licitação",            antes: "74 dias",    depois: "41 dias",     periodo: "Jan–Jun/2026",  feature: "Fluxo de processos",        autorizado: true,  usos: 3 },
+          { id: "m-2", cliente: "Município do MG, ~70 mil hab.",  indicador: "Pregões desertos ou fracassados",         antes: "18%",        depois: "6%",          periodo: "2025 → 2026",   feature: "Termo de Referência guiado", autorizado: true,  usos: 2 },
+          { id: "m-3", cliente: "Município do SP, ~200 mil hab.", indicador: "Retrabalho em pareceres jurídicos",       antes: "35%",        depois: "12%",         periodo: "Últimos 8 meses", feature: "Checklist de conformidade", autorizado: true,  usos: 1 },
+          { id: "m-4", cliente: "Município do RS, ~110 mil hab.", indicador: "Economia média em pregões eletrônicos",   antes: "6,2%",       depois: "11,8%",       periodo: "Ano de 2025",   feature: "Pesquisa de preços",        autorizado: false, usos: 0 },
+          { id: "m-5", cliente: "Município do PR, ~130 mil hab.", indicador: "Horas gastas montando o ETP",             antes: "22 h",       depois: "7 h",         periodo: "Último trimestre", feature: "Gerador de ETP",          autorizado: true,  usos: 2 },
+          { id: "m-6", cliente: "Município do GO, ~60 mil hab.",  indicador: "Processos devolvidos pela controladoria", antes: "41%",        depois: "15%",         periodo: "Jul–Set/2026",  feature: "Régua validadora",          autorizado: true,  usos: 0 },
+          { id: "m-7", cliente: "Município do SC, ~85 mil hab.",  indicador: "Contratos vencidos sem renovação",        antes: "27 por ano", depois: "3 por ano",   periodo: "2024 → 2026",   feature: "Gestão de contratos",       autorizado: false, usos: 0 },
+        ],
+
+        design: [
+          { id: "d-1", nome: "Régua validadora em ação",        feature: "Régua validadora",           tipo: "animação",   duracao: "0:12", thumb: 1, usos: 2 },
+          { id: "d-2", nome: "Editor de DFD com blocos",         feature: "Editor de blocos",           tipo: "screenshot", duracao: null,   thumb: 2, usos: 1 },
+          { id: "d-3", nome: "Matriz de riscos preenchida",      feature: "Matriz de gerenciamento de riscos", tipo: "screenshot", duracao: null, thumb: 3, usos: 0 },
+          { id: "d-4", nome: "Assistente de IA sugerindo texto", feature: "Assistente de redação",      tipo: "animação",   duracao: "0:18", thumb: 0, usos: 1 },
+          { id: "d-5", nome: "Painel de contratos a vencer",     feature: "Gestão de contratos",        tipo: "screenshot", duracao: null,   thumb: 1, usos: 0 },
+          { id: "d-6", nome: "Pesquisa de preços comparativa",   feature: "Pesquisa de preços",         tipo: "animação",   duracao: "0:09", thumb: 2, usos: 0 },
+          { id: "d-7", nome: "Checklist de conformidade",        feature: "Checklist de conformidade",  tipo: "screenshot", duracao: null,   thumb: 3, usos: 0 },
+        ],
+
+        sinais: [
+          // ---- Cidade A ----
+          { id: "s-a1", cidade: "A", tipo: "contrato vigente com concorrente", descricao: "Contrato de software de gestão de compras com outro fornecedor, vigente com aditivos.", valor: "R$ 420 mil/ano", dataRelevante: "2027-03-15", fonte: "PNCP", link: "https://pncp.gov.br/app/contratos/00000000000100/2024/118", usos: 1 },
+          { id: "s-a2", cidade: "A", tipo: "dotação na LOA", descricao: "LOA 2027 reserva dotação para 'sistemas de informação e modernização administrativa'.", valor: "R$ 1,8 mi", dataRelevante: "2026-12-31", fonte: "Portal da transparência", link: "https://transparencia.cidadea.pr.gov.br/orcamento/loa-2027", usos: 0 },
+          { id: "s-a3", cidade: "A", tipo: "ata de registro de preço", descricao: "Ata de registro de preços para licenciamento de software de gestão pública, vigência de 12 meses.", valor: "R$ 650 mil", dataRelevante: "2027-01-10", fonte: "PNCP", link: "https://pncp.gov.br/app/atas/00000000000100/2026/44", usos: 0 },
+          // ---- Cidade B ----
+          { id: "s-b1", cidade: "B", tipo: "vencimento de contrato", descricao: "Contrato do atual sistema de licitações vence em 90 dias, sem previsão de prorrogação.", valor: "R$ 210 mil", dataRelevante: "2027-01-22", fonte: "Diário Oficial", link: "https://diario.cidadeb.mg.gov.br/edicao/1198", usos: 0 },
+          { id: "s-b2", cidade: "B", tipo: "dotação na LOA", descricao: "Previsão orçamentária para 'gestão eletrônica de processos' na Sec. de Administração.", valor: "R$ 540 mil", dataRelevante: "2026-12-31", fonte: "Portal da transparência", link: "https://transparencia.cidadeb.mg.gov.br/orcamento/loa-2027", usos: 0 },
+          // ---- Cidade C ----
+          { id: "s-c1", cidade: "C", tipo: "vencimento de contrato", descricao: "Contrato com fornecedor de sistema de contratos vence em dezembro; processo de nova contratação ainda não aberto.", valor: "R$ 980 mil", dataRelevante: "2026-12-18", fonte: "PNCP", link: "https://pncp.gov.br/app/contratos/00000000000300/2023/77", usos: 2 },
+          { id: "s-c2", cidade: "C", tipo: "contrato vigente com concorrente", descricao: "Concorrente mantém contrato de R$ 1,4 mi/ano com cláusula de reajuste anual pelo IPCA.", valor: "R$ 1,4 mi/ano", dataRelevante: "2028-05-01", fonte: "Portal da transparência", link: "https://transparencia.cidadec.sp.gov.br/contratos/2023-077", usos: 0 },
+          { id: "s-c3", cidade: "C", tipo: "dotação na LOA", descricao: "Dotação para 'modernização digital' vinculada ao plano de modernização anunciado em outubro.", valor: "R$ 3,2 mi", dataRelevante: "2026-12-31", fonte: "Diário Oficial", link: "https://diario.cidadec.sp.gov.br/edicao/9010", usos: 0 },
+        ],
+      };
+
+      /* =====================================================================
+         CONFIG
+         ===================================================================== */
+      const AGENTES = ["personas", "noticias", "metricas", "design", "sinais"];
+
+      const SLOTS = [
+        { key: "destinatario", label: "Destinatário", agente: "personas", min: 1, max: 1, dica: "exatamente 1" },
+        { key: "gancho",       label: "Gancho",       agente: "noticias", min: 0, max: 2, dica: "0 a 2" },
+        { key: "prova",        label: "Prova",        agente: "metricas", min: 0, max: 2, dica: "0 a 2" },
+        { key: "visual",       label: "Visual",       agente: "design",   min: 0, max: 1, dica: "0 a 1" },
+        { key: "momento",      label: "Momento",      agente: "sinais",   min: 0, max: 2, dica: "0 a 2" },
+      ];
+      const SLOT_BY_KEY = Object.fromEntries(SLOTS.map((s) => [s.key, s]));
+      const SLOT_BY_AGENTE = Object.fromEntries(SLOTS.map((s) => [s.agente, s]));
+
+      const CANAIS = [{ v: "email", l: "E-mail" }, { v: "whatsapp", l: "WhatsApp" }];
+      const OBJETIVOS = [
+        { v: "primeiro contato", l: "Primeiro contato" },
+        { v: "nutrição", l: "Nutrição" },
+        { v: "convite para reunião", l: "Convite para reunião" },
+        { v: "reativação", l: "Reativação" },
+      ];
+
+      const ICONES = {
+        personas: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        noticias: '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8V6Z"/>',
+        metricas: '<path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/>',
+        design:   '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+        sinais:   '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+      };
+      const svg = (paths, size = 14) => `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">${paths}</svg>`;
+      const I = {
+        plus:  '<path d="M12 5v14M5 12h14"/>',
+        x:     '<path d="M18 6 6 18M6 6l12 12"/>',
+        up:    '<path d="m18 15-6-6-6 6"/>',
+        down:  '<path d="m6 9 6 6 6-6"/>',
+        grip:  '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>',
+        warn:  '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/>',
+        ban:   '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+        info:  '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+        play:  '<polygon points="6 3 20 12 6 21 6 3"/>',
+        check: '<path d="M20 6 9 17l-5-5"/>',
+      };
+
+      /* =====================================================================
+         ESTADO (somente em memória)
+         ===================================================================== */
+      const emptyComp = () => ({ destinatario: [], gancho: [], prova: [], visual: [], momento: [] });
+      const state = {
+        cidade: "A",                 // "A" | "B" | "C" | "todas"
+        busca: "",
+        aberto: { personas: true, noticias: false, metricas: false, design: false, sinais: false },
+        comp: emptyComp(),
+        canal: "email",
+        objetivo: "primeiro contato",
+        obs: "",
+        salvas: [],
+        salvaAtualId: null,
+        pane: "bank",
+      };
+      let drag = null; // { id, from: slotKey|null }
+
+      /* ---------- Índices ---------- */
+      const ITEMS = {};
+      AGENTES.forEach((ag) => DB[ag].forEach((it) => { it._agente = ag; ITEMS[it.id] = it; }));
+
+      /* ---------- Utilidades ---------- */
+      const $ = (s, r = document) => r.querySelector(s);
+      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      const norm = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+      const fmtData = (iso) => { const [y, m, d] = iso.split("-"); return `${d}/${m}/${y}`; };
+      const cidadeNome = (c) => DB.cidades[c]?.nome ?? "—";
+      const compIds = () => SLOTS.flatMap((s) => state.comp[s.key]);
+      const totalItens = () => compIds().length;
+
+      function usosDe(id) {
+        const base = ITEMS[id].usos || 0;
+        const salvos = state.salvas.filter((c) => Object.values(c.comp).some((arr) => arr.includes(id))).length;
+        return base + salvos;
+      }
+
+      let toastTimeout;
+      function toast(msg) {
+        const t = $("#toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => t.classList.remove("show"), 2600);
+      }
+
+      /* ---------- Busca / filtro ---------- */
+      function textoBusca(it) {
+        return norm(Object.entries(it).filter(([k]) => !k.startsWith("_") && k !== "id").map(([, v]) => v).join(" "));
+      }
+      function listaVisivel(ag) {
+        const q = norm(state.busca.trim());
+        return DB[ag].filter((it) => {
+          if (it.cidade && state.cidade !== "todas" && it.cidade !== state.cidade) return false;
+          return !q || textoBusca(it).includes(q);
+        });
+      }
+
+      /* =====================================================================
+         RENDER — Banco (esquerda)
+         ===================================================================== */
+      function tagTom(tom) { return `<span class="tag ${tom === "crítico" ? "bad" : tom === "positivo" ? "ok" : ""}">tom: ${esc(tom)}</span>`; }
+      const tagBool = (rotulo, ok) => `<span class="tag ${ok ? "ok" : "bad"}">${rotulo}: ${ok ? "sim" : "não"}</span>`;
+      const link = (url, texto) => `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" draggable="false">${esc(texto)}</a>`;
+
+      function cardCorpo(it) {
+        switch (it._agente) {
+          case "personas":
+            return `
+              <div class="card-title">${esc(it.nome)}</div>
+              <div class="card-sub">${esc(it.cargo)} · ${esc(it.secretaria)}</div>
+              <dl class="card-kv">
+                <dt>Cidade</dt><dd>${esc(cidadeNome(it.cidade))}</dd>
+                <dt>E-mail</dt><dd>${esc(it.email)}</dd>
+                <dt>WhatsApp</dt><dd>${esc(it.whatsapp)} ${tagBool("opt-in", it.optin)}</dd>
+                <dt>Fonte</dt><dd>${link(it.link, it.fonte)}</dd>
+                <dt>Verificado</dt><dd>${fmtData(it.verificadoEm)}</dd>
+              </dl>`;
+          case "noticias":
+            return `
+              <div class="card-title">${esc(it.titulo)}</div>
+              <p class="card-text">${esc(it.resumo)}</p>
+              <div class="tags"><span class="tag accent">${esc(it.tema)}</span>${tagTom(it.tom)}<span class="tag">${esc(cidadeNome(it.cidade))}</span></div>
+              <dl class="card-kv"><dt>Fonte</dt><dd>${link(it.link, it.fonte)}</dd><dt>Data</dt><dd>${fmtData(it.data)}</dd></dl>`;
+          case "metricas":
+            return `
+              <div class="card-title">${esc(it.indicador)}</div>
+              <div class="card-sub">${esc(it.cliente)}</div>
+              <p class="card-text"><b>${esc(it.antes)}</b> → <b>${esc(it.depois)}</b></p>
+              <dl class="card-kv"><dt>Período</dt><dd>${esc(it.periodo)}</dd><dt>Feature</dt><dd>${esc(it.feature)}</dd></dl>
+              <div class="tags">${tagBool("uso autorizado", it.autorizado)}</div>`;
+          case "design":
+            return `
+              <div class="card-title">${esc(it.nome)}</div>
+              <div class="card-sub">${esc(it.feature)}</div>
+              <div class="thumb v${it.thumb}" aria-hidden="true">
+                <i style="width:45%"></i><i style="width:70%"></i>
+                <div class="blk"><b></b><b></b><b></b></div>
+                ${it.tipo === "animação" ? `<span class="play">${svg(I.play, 10)} ${esc(it.duracao)}</span>` : ""}
+              </div>
+              <div class="tags"><span class="tag accent">${esc(it.tipo)}</span>${it.duracao ? `<span class="tag">${esc(it.duracao)}</span>` : ""}</div>`;
+          case "sinais":
+            return `
+              <div class="card-title">${esc(it.tipo)}</div>
+              <p class="card-text">${esc(it.descricao)}</p>
+              <dl class="card-kv">
+                <dt>Cidade</dt><dd>${esc(cidadeNome(it.cidade))}</dd>
+                <dt>Valor</dt><dd>${esc(it.valor)}</dd>
+                <dt>Data</dt><dd>${fmtData(it.dataRelevante)}</dd>
+                <dt>Fonte</dt><dd>${link(it.link, it.fonte)}</dd>
+              </dl>`;
+        }
+        return "";
+      }
+
+      function renderCard(it) {
+        const slot = SLOT_BY_AGENTE[it._agente];
+        const dentro = state.comp[slot.key].includes(it.id);
+        const cheio = !dentro && slot.max > 1 && state.comp[slot.key].length >= slot.max;
+        const n = usosDe(it.id);
+        const rotulo = dentro ? `${svg(I.check, 12)} Adicionado` : cheio ? "Slot cheio" : `${svg(I.plus, 12)} adicionar`;
+        const titulo = it._agente === "personas" && state.comp.destinatario.length && !dentro ? "Substitui o destinatário atual" : "";
+        return `
+          <article class="card ${dentro ? "in-comp" : ""}" style="--ag:var(--ag-${it._agente})" draggable="true" data-id="${it.id}">
+            <div class="card-top">
+              ${cardCorpoTopo(it)}
+            </div>
+            ${cardCorpo(it)}
+            <div class="card-foot">
+              <span class="card-uses">usado em ${n} combinaç${n === 1 ? "ão" : "ões"}</span>
+              <button type="button" class="btn-add" data-act="add" data-id="${it.id}" ${dentro || cheio ? "disabled" : ""} ${titulo ? `title="${titulo}"` : ""}>${rotulo}</button>
+            </div>
+          </article>`;
+      }
+      function cardCorpoTopo(it) {
+        return `<span class="badge-agent">${svg(ICONES[it._agente], 11)} ${esc(DB.agentes[it._agente].curto)}</span>`;
+      }
+
+      function renderBank() {
+        const host = $("#bank");
+        // Preserva rolagem da coluna ao redesenhar
+        host.innerHTML = AGENTES.map((ag) => {
+          const lista = listaVisivel(ag);
+          const meta = DB.agentes[ag];
+          const aberto = state.aberto[ag];
+          return `
+            <section class="agent-sec ${aberto ? "open" : ""}" style="--ag:var(--ag-${ag})">
+              <button type="button" class="agent-head" data-act="toggle" data-ag="${ag}" aria-expanded="${aberto}">
+                <span class="agent-ico">${svg(ICONES[ag], 15)}</span>
+                <span class="agent-meta">
+                  <span class="agent-name">${esc(meta.nome)}</span><br />
+                  <span class="agent-sub">Última coleta: ${fmtData(meta.ultimaColeta)}</span>
+                </span>
+                <span class="agent-count">${lista.length}</span>
+                <span class="agent-chev">${svg(I.down, 16)}</span>
+              </button>
+              <div class="agent-body">
+                ${lista.length ? lista.map((it) => renderCard(it)).join("") : `<p class="agent-empty">Nenhum insumo para este filtro.</p>`}
+              </div>
+            </section>`;
+        }).join("");
+      }
+
+      /* =====================================================================
+         ALERTAS
+         ===================================================================== */
+      function calcularAlertas() {
+        const out = [];
+        const persona = ITEMS[state.comp.destinatario[0]];
+
+        if (!persona) {
+          out.push({ nivel: "info", titulo: "Escolha um destinatário", texto: "O slot Destinatário é obrigatório para copiar o contexto e salvar a combinação." });
+        }
+        if (persona && state.canal === "whatsapp" && !persona.optin) {
+          out.push({
+            nivel: "block",
+            titulo: "Geração bloqueada: sem opt-in para WhatsApp",
+            texto: `${persona.nome} não deu opt-in para receber mensagens por WhatsApp. Não é possível gerar o contexto neste canal.`,
+            acao: { rotulo: "Trocar canal para e-mail", id: "canal-email" },
+          });
+        }
+        if (persona) {
+          state.comp.gancho.forEach((id) => {
+            const n = ITEMS[id];
+            if (n.cidade !== persona.cidade) {
+              out.push({ nivel: "warn", titulo: "Notícia de outra cidade", texto: `“${n.titulo}” é de ${cidadeNome(n.cidade)}, mas o destinatário é de ${cidadeNome(persona.cidade)}. Confirme se o gancho faz sentido para ele.` });
+            }
+          });
+        }
+        state.comp.prova.forEach((id) => {
+          const m = ITEMS[id];
+          if (!m.autorizado) {
+            out.push({ nivel: "strong", titulo: "Métrica sem autorização de uso", texto: `“${m.indicador}” (${m.cliente}) está com uso autorizado: não. Usar este dado em comunicação externa pode violar o acordo com o cliente. Remova ou obtenha autorização antes de enviar.` });
+          }
+        });
+        state.comp.gancho.forEach((id) => {
+          const n = ITEMS[id];
+          if (n.tom === "crítico") {
+            out.push({ nivel: "warn", titulo: "Notícia de tom crítico", texto: `“${n.titulo}”: não exponha o gestor nem aponte culpados. Trate o tema como um desafio comum aos municípios e posicione o produto como apoio.` });
+          }
+        });
+        return out;
+      }
+
+      const ALERTA_ICO = { block: I.ban, strong: I.warn, warn: I.warn, info: I.info };
+      function renderAlertas(alertas) {
+        $("#alerts").innerHTML = alertas.map((a, i) => `
+          <div class="alert ${a.nivel}" role="${a.nivel === "block" || a.nivel === "strong" ? "alert" : "note"}">
+            <div class="alert-title">${svg(ALERTA_ICO[a.nivel], 15)} ${esc(a.titulo)}</div>
+            <p class="alert-text">${esc(a.texto)}</p>
+            ${a.acao ? `<div class="alert-act"><button type="button" class="alert-btn" data-act="${a.acao.id}">${esc(a.acao.rotulo)}</button></div>` : ""}
+          </div>`).join("");
+      }
+
+      /* =====================================================================
+         RENDER — Composição (centro)
+         ===================================================================== */
+      function avisoDoItem(id) {
+        const it = ITEMS[id];
+        const persona = ITEMS[state.comp.destinatario[0]];
+        if (it._agente === "metricas" && !it.autorizado) return { forte: true, t: "Uso não autorizado" };
+        if (it._agente === "noticias" && it.tom === "crítico") return { forte: false, t: "Tom crítico" };
+        if (it._agente === "noticias" && persona && it.cidade !== persona.cidade) return { forte: false, t: "Cidade diferente da persona" };
+        if (it._agente === "personas" && state.canal === "whatsapp" && !it.optin) return { forte: true, t: "Sem opt-in de WhatsApp" };
+        return null;
+      }
+      function subDoItem(it) {
+        switch (it._agente) {
+          case "personas": return `${it.cargo} · ${cidadeNome(it.cidade)}`;
+          case "noticias": return `${it.tema} · tom ${it.tom} · ${cidadeNome(it.cidade)}`;
+          case "metricas": return `${it.antes} → ${it.depois} · ${it.cliente}`;
+          case "design":   return `${it.tipo}${it.duracao ? " · " + it.duracao : ""} · ${it.feature}`;
+          case "sinais":   return `${it.valor} · ${cidadeNome(it.cidade)}`;
+        }
+      }
+      const tituloDoItem = (it) => it.nome || it.titulo || it.indicador || it.tipo;
+
+      function renderSlots() {
+        $("#slots").innerHTML = SLOTS.map((s) => {
+          const ids = state.comp[s.key];
+          const cheio = ids.length >= s.max;
+          const itens = ids.map((id, i) => {
+            const it = ITEMS[id];
+            const av = avisoDoItem(id);
+            return `
+              <div class="slot-item" style="--ag:var(--ag-${it._agente})" draggable="true" data-id="${id}" data-slot="${s.key}">
+                <span class="grip" title="Arraste para reordenar">${svg(I.grip, 14)}</span>
+                <div class="si-main">
+                  <div class="si-title">${esc(tituloDoItem(it))}</div>
+                  <div class="si-sub">${esc(subDoItem(it))}</div>
+                </div>
+                ${av ? `<span class="si-warn ${av.forte ? "strong" : ""}" title="${esc(av.t)}">${svg(I.warn, 15)}</span>` : ""}
+                <span class="si-ctrl">
+                  <button type="button" class="ico-btn" data-act="up" data-id="${id}" data-slot="${s.key}" aria-label="Mover para cima" ${i === 0 ? "disabled" : ""}>${svg(I.up, 14)}</button>
+                  <button type="button" class="ico-btn" data-act="down" data-id="${id}" data-slot="${s.key}" aria-label="Mover para baixo" ${i === ids.length - 1 ? "disabled" : ""}>${svg(I.down, 14)}</button>
+                  <button type="button" class="ico-btn del" data-act="remove" data-id="${id}" data-slot="${s.key}" aria-label="Remover">${svg(I.x, 14)}</button>
+                </span>
+              </div>`;
+          }).join("");
+          return `
+            <section class="slot ${ids.length ? "filled" : ""} ${cheio ? "is-full" : ""}" style="--ag:var(--ag-${s.agente})" data-slot="${s.key}">
+              <div class="slot-head">
+                <span class="badge-agent">${svg(ICONES[s.agente], 11)} ${esc(DB.agentes[s.agente].curto)}</span>
+                <span class="slot-name">${esc(s.label)}</span>
+                ${s.min ? `<span class="slot-req">obrigatório</span>` : ""}
+                <span class="slot-flag f-ok">Solte aqui${s.max === 1 && ids.length ? " (substitui)" : ""}</span>
+                <span class="slot-flag f-full">Slot cheio</span>
+                <span class="slot-flag f-bad">Não aceita este tipo</span>
+                <span class="slot-cap">${ids.length}/${s.max}</span>
+              </div>
+              <div class="slot-list">
+                ${itens || `<p class="slot-empty">Arraste um insumo de ${esc(DB.agentes[s.agente].curto)} ou use “+ adicionar”.</p>`}
+              </div>
+            </section>`;
+        }).join("");
+      }
+
+      function renderGen() {
+        const grupo = (lista, atual, nome) => lista.map((o) =>
+          `<button type="button" class="opcao ${atual === o.v ? "sel" : ""}" data-act="${nome}" data-v="${esc(o.v)}" role="radio" aria-checked="${atual === o.v}"><span class="marcador"></span>${esc(o.l)}</button>`).join("");
+        $("#opt-canal").innerHTML = grupo(CANAIS, state.canal, "canal");
+        $("#opt-objetivo").innerHTML = grupo(OBJETIVOS, state.objetivo, "objetivo");
+      }
+
+      /* =====================================================================
+         CONTEXTO MONTADO (markdown)
+         ===================================================================== */
+      function mdPersona(p) {
+        return [
+          `- **${p.nome}** — ${p.cargo}, ${p.secretaria} (${cidadeNome(p.cidade)})`,
+          `  - E-mail institucional: ${p.email}`,
+          `  - WhatsApp: ${p.whatsapp} (opt-in: ${p.optin ? "sim" : "não"})`,
+          `  - Fonte: ${p.fonte} — ${p.link} (verificado em ${fmtData(p.verificadoEm)})`,
+        ].join("\n");
+      }
+      function mdNoticia(n) {
+        return [
+          `- **${n.titulo}** (${fmtData(n.data)}) — ${cidadeNome(n.cidade)}`,
+          `  - Resumo: ${n.resumo}`,
+          `  - Tema: ${n.tema} | Tom: ${n.tom}`,
+          `  - Fonte: ${n.fonte} — ${n.link}`,
+        ].join("\n");
+      }
+      function mdMetrica(m) {
+        return [
+          `- **${m.indicador}** — ${m.cliente}`,
+          `  - Resultado: ${m.antes} → ${m.depois} (${m.periodo})`,
+          `  - Feature relacionada: ${m.feature}`,
+          `  - Uso autorizado: ${m.autorizado ? "sim" : "NÃO"}`,
+        ].join("\n");
+      }
+      function mdDesign(d) {
+        return [
+          `- **${d.nome}** — ${d.tipo}${d.duracao ? " (" + d.duracao + ")" : ""}`,
+          `  - Feature: ${d.feature}`,
+          `  - Referência: ${d.id}`,
+        ].join("\n");
+      }
+      function mdSinal(s) {
+        return [
+          `- **${s.tipo}** — ${cidadeNome(s.cidade)}`,
+          `  - ${s.descricao}`,
+          `  - Valor: ${s.valor} | Data relevante: ${fmtData(s.dataRelevante)}`,
+          `  - Fonte: ${s.fonte} — ${s.link}`,
+        ].join("\n");
+      }
+      const MD_FN = { personas: mdPersona, noticias: mdNoticia, metricas: mdMetrica, design: mdDesign, sinais: mdSinal };
+
+      function diretrizes() {
+        const d = [];
+        state.comp.gancho.forEach((id) => {
+          const n = ITEMS[id];
+          if (n.tom === "crítico") d.push(`Notícia “${n.titulo}” tem tom crítico: não expor o gestor nem citar culpados; tratar como desafio comum aos municípios.`);
+        });
+        state.comp.prova.forEach((id) => {
+          const m = ITEMS[id];
+          if (!m.autorizado) d.push(`Métrica “${m.indicador}” NÃO tem uso autorizado: não citar no conteúdo.`);
+        });
+        const p = ITEMS[state.comp.destinatario[0]];
+        if (p) state.comp.gancho.forEach((id) => {
+          const n = ITEMS[id];
+          if (n.cidade !== p.cidade) d.push(`Notícia “${n.titulo}” é de outra cidade (${cidadeNome(n.cidade)}): apresentar como referência regional, não como fato do município do destinatário.`);
+        });
+        return d;
+      }
+
+      function montarContexto() {
+        const secoes = [];
+        const bloco = (titulo, key, ag) => {
+          const ids = state.comp[key];
+          const corpo = ids.length ? ids.map((id) => MD_FN[ag](ITEMS[id])).join("\n") : "- (não selecionado)";
+          secoes.push(`## ${titulo}\n${corpo}`);
+        };
+        secoes.push("# Contexto para micro conteúdo");
+        bloco("Destinatário", "destinatario", "personas");
+        bloco("Gancho (notícias/problemas)", "gancho", "noticias");
+        bloco("Prova (métricas)", "prova", "metricas");
+        bloco("Visual (design)", "visual", "design");
+        bloco("Momento (sinais de compra)", "momento", "sinais");
+        secoes.push(`## Canal\n${CANAIS.find((c) => c.v === state.canal).l}`);
+        secoes.push(`## Objetivo\n${state.objetivo}`);
+        secoes.push(`## Observações\n${state.obs.trim() || "(nenhuma)"}`);
+        const dir = diretrizes();
+        if (dir.length) secoes.push(`## Diretrizes\n${dir.map((x) => "- " + x).join("\n")}`);
+        return secoes.join("\n\n");
+      }
+
+      function renderCtxPreview(md) {
+        // Realce leve: títulos e "(não selecionado)"
+        $("#ctx-preview").innerHTML = md.split("\n").map((l) => {
+          const e = esc(l);
+          if (/^#{1,2} /.test(l)) return `<span class="h">${e}</span>`;
+          if (l.includes("(não selecionado)") || l === "(nenhuma)") return `<span class="mute">${e}</span>`;
+          return e;
+        }).join("\n");
+      }
+
+      function bloqueio(alertas) {
+        if (!state.comp.destinatario.length) return "Selecione um destinatário para copiar.";
+        const b = alertas.find((a) => a.nivel === "block");
+        return b ? "Geração bloqueada: persona sem opt-in no WhatsApp." : "";
+      }
+
+      /* =====================================================================
+         RENDER — Contexto (direita) + salvas
+         ===================================================================== */
+      function renderCtx(alertas) {
+        const md = montarContexto();
+        renderCtxPreview(md);
+        const motivo = bloqueio(alertas);
+        $("#btn-copiar").disabled = !!motivo;
+        const st = $("#ctx-status");
+        if (motivo) { st.className = "ctx-status blocked"; st.textContent = motivo; }
+        else if (alertas.some((a) => a.nivel === "strong")) { st.className = "ctx-status blocked"; st.textContent = "Atenção: há uma métrica sem autorização de uso."; }
+        else { st.className = "ctx-status ok"; st.textContent = "Pronto para copiar."; }
+        $("#btn-salvar").disabled = !state.comp.destinatario.length;
+        $("#btn-salvar").title = state.comp.destinatario.length ? "" : "Selecione um destinatário";
+        $("#nome-comb").placeholder = nomeAutomatico();
+      }
+
+      function nomeAutomatico() {
+        const p = ITEMS[state.comp.destinatario[0]];
+        return p ? `${p.nome} — ${state.objetivo}` : "Nome da combinação (opcional)";
+      }
+
+      function renderSalvas() {
+        $("#contador").textContent = state.salvas.length;
+        const host = $("#saved-list");
+        if (!state.salvas.length) {
+          host.innerHTML = `<p class="saved-empty">Nenhuma combinação salva ainda.</p>`;
+          return;
+        }
+        host.innerHTML = state.salvas.map((c) => {
+          const n = Object.values(c.comp).reduce((a, arr) => a + arr.length, 0);
+          return `
+            <div class="saved-item ${c.id === state.salvaAtualId ? "current" : ""}" data-act="load" data-id="${c.id}" tabindex="0" role="button" aria-label="Recarregar ${esc(c.nome)}">
+              <div class="saved-main">
+                <div class="saved-name">${esc(c.nome)}</div>
+                <div class="saved-meta">${esc(c.data)} · ${n} insumo${n === 1 ? "" : "s"} · ${esc(c.canal === "email" ? "e-mail" : "WhatsApp")}</div>
+              </div>
+              <button type="button" class="ico-btn del" data-act="del-saved" data-id="${c.id}" aria-label="Excluir combinação">${svg(I.x, 14)}</button>
+            </div>`;
+        }).join("");
+      }
+
+      /* =====================================================================
+         RENDER GERAL
+         ===================================================================== */
+      function renderComposicao() {
+        renderSlots();
+        renderGen();
+        const alertas = calcularAlertas();
+        renderAlertas(alertas);
+        renderCtx(alertas);
+        $("#pill-comp").textContent = totalItens();
+      }
+      function renderTudo() {
+        renderBank();
+        renderComposicao();
+        renderSalvas();
+      }
+
+      /* =====================================================================
+         AÇÕES DE COMPOSIÇÃO
+         ===================================================================== */
+      function adicionar(id, indice) {
+        const it = ITEMS[id];
+        const slot = SLOT_BY_AGENTE[it._agente];
+        const arr = state.comp[slot.key];
+        if (arr.includes(id)) { toast("Este insumo já está na composição."); return false; }
+        if (slot.max === 1) {
+          const substituiu = arr.length > 0;
+          state.comp[slot.key] = [id];
+          toast(substituiu ? `${slot.label} substituído.` : `Adicionado em ${slot.label}.`);
+        } else if (arr.length >= slot.max) {
+          toast(`${slot.label} já tem ${slot.max} itens. Remova um para adicionar outro.`);
+          return false;
+        } else {
+          arr.splice(indice == null ? arr.length : indice, 0, id);
+          toast(`Adicionado em ${slot.label}.`);
+        }
+        state.salvaAtualId = null;
+        renderTudo();
+        return true;
+      }
+      function remover(slotKey, id) {
+        state.comp[slotKey] = state.comp[slotKey].filter((x) => x !== id);
+        state.salvaAtualId = null;
+        renderTudo();
+      }
+      function mover(slotKey, id, novoIndice) {
+        const arr = state.comp[slotKey];
+        const de = arr.indexOf(id);
+        if (de < 0) return;
+        arr.splice(de, 1);
+        arr.splice(Math.max(0, Math.min(novoIndice, arr.length)), 0, id);
+        renderComposicao();
+        renderBank();
+      }
+
+      function limpar() {
+        state.comp = emptyComp();
+        state.obs = "";
+        state.canal = "email";
+        state.objetivo = "primeiro contato";
+        state.salvaAtualId = null;
+        $("#obs").value = "";
+        $("#nome-comb").value = "";
+        renderTudo();
+        toast("Composição limpa.");
+      }
+
+      function salvar() {
+        if (!state.comp.destinatario.length) return;
+        const agora = new Date();
+        const data = agora.toLocaleDateString("pt-BR") + " " + agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+        const nome = $("#nome-comb").value.trim() || nomeAutomatico();
+        const c = {
+          id: "c-" + Date.now(),
+          nome,
+          data,
+          comp: JSON.parse(JSON.stringify(state.comp)),
+          canal: state.canal,
+          objetivo: state.objetivo,
+          obs: state.obs,
+        };
+        state.salvas.unshift(c);
+        state.salvaAtualId = c.id;
+        $("#nome-comb").value = "";
+        renderTudo();
+        toast("Combinação salva.");
+      }
+
+      function carregar(id) {
+        const c = state.salvas.find((x) => x.id === id);
+        if (!c) return;
+        state.comp = JSON.parse(JSON.stringify(c.comp));
+        state.canal = c.canal;
+        state.objetivo = c.objetivo;
+        state.obs = c.obs;
+        state.salvaAtualId = c.id;
+        $("#obs").value = c.obs;
+        $("#nome-comb").value = c.nome;
+        renderTudo();
+        toast(`Combinação “${c.nome}” carregada.`);
+      }
+
+      async function copiar() {
+        const texto = montarContexto();
+        let ok = false;
+        try {
+          await navigator.clipboard.writeText(texto);
+          ok = true;
+        } catch (_) {
+          // Fallback para file:// ou navegadores sem permissão de clipboard
+          const ta = document.createElement("textarea");
+          ta.value = texto; ta.style.position = "fixed"; ta.style.opacity = "0";
+          document.body.appendChild(ta); ta.select();
+          try { ok = document.execCommand("copy"); } catch (_) { ok = false; }
+          ta.remove();
+        }
+        toast(ok ? "Contexto copiado." : "Não foi possível copiar. Selecione o texto manualmente.");
+      }
+
+      /* =====================================================================
+         EVENTOS
+         ===================================================================== */
+      document.addEventListener("click", (e) => {
+        const el = e.target.closest("[data-act]");
+        if (!el) return;
+        const act = el.dataset.act;
+        switch (act) {
+          case "toggle": state.aberto[el.dataset.ag] = !state.aberto[el.dataset.ag]; renderBank(); break;
+          case "add": adicionar(el.dataset.id); break;
+          case "remove": remover(el.dataset.slot, el.dataset.id); break;
+          case "up": { const a = state.comp[el.dataset.slot]; mover(el.dataset.slot, el.dataset.id, a.indexOf(el.dataset.id) - 1); break; }
+          case "down": { const a = state.comp[el.dataset.slot]; mover(el.dataset.slot, el.dataset.id, a.indexOf(el.dataset.id) + 1); break; }
+          case "canal": state.canal = el.dataset.v; renderComposicao(); break;
+          case "canal-email": state.canal = "email"; renderComposicao(); toast("Canal alterado para e-mail."); break;
+          case "objetivo": state.objetivo = el.dataset.v; renderComposicao(); break;
+          case "load": carregar(el.dataset.id); break;
+          case "del-saved":
+            e.stopPropagation();
+            state.salvas = state.salvas.filter((c) => c.id !== el.dataset.id);
+            if (state.salvaAtualId === el.dataset.id) state.salvaAtualId = null;
+            renderTudo();
+            break;
+        }
+      });
+      document.addEventListener("keydown", (e) => {
+        if ((e.key === "Enter" || e.key === " ") && e.target.matches?.('.saved-item[data-act="load"]')) {
+          e.preventDefault(); carregar(e.target.dataset.id);
+        }
+      });
+
+      $("#btn-copiar").addEventListener("click", copiar);
+      $("#btn-limpar").addEventListener("click", limpar);
+      $("#btn-salvar").addEventListener("click", salvar);
+      $("#obs").addEventListener("input", (e) => { state.obs = e.target.value; const a = calcularAlertas(); renderCtx(a); });
+      $("#busca").addEventListener("input", (e) => { state.busca = e.target.value; if (state.busca.trim()) AGENTES.forEach((ag) => { if (listaVisivel(ag).length) state.aberto[ag] = true; }); renderBank(); });
+      $("#sel-cidade").addEventListener("change", (e) => { state.cidade = e.target.value; renderBank(); });
+      $("#btn-contador").addEventListener("click", () => {
+        setPane("ctx");
+        $("#saved-sec").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      /* ---------- Tabs mobile ---------- */
+      function setPane(p) {
+        state.pane = p;
+        $("#app").dataset.pane = p;
+        document.querySelectorAll(".mtab").forEach((b) => b.classList.toggle("active", b.dataset.pane === p));
+      }
+      document.querySelectorAll(".mtab").forEach((b) => b.addEventListener("click", () => setPane(b.dataset.pane)));
+
+      /* =====================================================================
+         DRAG AND DROP (HTML5 nativo)
+         ===================================================================== */
+      function limparMarcas() {
+        document.body.classList.remove("is-dragging");
+        document.querySelectorAll(".slot").forEach((s) => s.classList.remove("valid", "invalid", "full-block", "over"));
+        document.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((x) => x.classList.remove("drag-over-top", "drag-over-bottom"));
+        document.querySelectorAll(".dragging").forEach((x) => x.classList.remove("dragging"));
+      }
+      function marcarSlots() {
+        document.body.classList.add("is-dragging");
+        const it = ITEMS[drag.id];
+        document.querySelectorAll(".slot").forEach((el) => {
+          const s = SLOT_BY_KEY[el.dataset.slot];
+          if (drag.from) { // reordenação: só o próprio slot
+            el.classList.add(el.dataset.slot === drag.from ? "valid" : "invalid");
+            return;
+          }
+          if (s.agente !== it._agente) { el.classList.add("invalid"); return; }
+          const cheio = s.max > 1 && state.comp[s.key].length >= s.max && !state.comp[s.key].includes(drag.id);
+          el.classList.add(cheio ? "full-block" : "valid");
+        });
+      }
+      const podeSoltar = (slotEl) => slotEl && (slotEl.classList.contains("valid"));
+
+      document.addEventListener("dragstart", (e) => {
+        const item = e.target.closest?.(".slot-item");
+        const card = e.target.closest?.(".card");
+        const src = item || card;
+        if (!src) return;
+        drag = { id: src.dataset.id, from: item ? item.dataset.slot : null };
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", drag.id);
+        // adia a marcação para não interferir na imagem de arraste
+        requestAnimationFrame(() => { src.classList.add("dragging"); marcarSlots(); });
+      });
+      document.addEventListener("dragend", () => { drag = null; limparMarcas(); });
+
+      document.addEventListener("dragover", (e) => {
+        if (!drag) return;
+        const slotEl = e.target.closest?.(".slot");
+        document.querySelectorAll(".slot.over").forEach((s) => { if (s !== slotEl) s.classList.remove("over"); });
+        document.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((x) => x.classList.remove("drag-over-top", "drag-over-bottom"));
+        if (!podeSoltar(slotEl)) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        slotEl.classList.add("over");
+        const alvo = e.target.closest(".slot-item");
+        if (alvo && alvo.dataset.id !== drag.id) {
+          const r = alvo.getBoundingClientRect();
+          alvo.classList.add(e.clientY < r.top + r.height / 2 ? "drag-over-top" : "drag-over-bottom");
+        }
+      });
+      document.addEventListener("dragleave", (e) => {
+        const slotEl = e.target.closest?.(".slot");
+        if (slotEl && !slotEl.contains(e.relatedTarget)) slotEl.classList.remove("over");
+      });
+
+      document.addEventListener("drop", (e) => {
+        if (!drag) return;
+        const slotEl = e.target.closest?.(".slot");
+        if (!podeSoltar(slotEl)) { limparMarcas(); drag = null; return; }
+        e.preventDefault();
+        const slotKey = slotEl.dataset.slot;
+        const alvo = e.target.closest(".slot-item");
+        let indice = state.comp[slotKey].length;
+        if (alvo) {
+          const base = state.comp[slotKey].indexOf(alvo.dataset.id);
+          const r = alvo.getBoundingClientRect();
+          indice = e.clientY < r.top + r.height / 2 ? base : base + 1;
+        }
+        const d = drag;
+        drag = null;
+        limparMarcas();
+        if (d.from) {
+          // reordenar: ajusta o índice depois da remoção do item original
+          const de = state.comp[slotKey].indexOf(d.id);
+          mover(slotKey, d.id, de < indice ? indice - 1 : indice);
+        } else {
+          adicionar(d.id, indice);
+        }
+      });
+
+      /* =====================================================================
+         INIT
+         ===================================================================== */
+      function init() {
+        const sel = $("#sel-cidade");
+        sel.innerHTML = Object.entries(DB.cidades).map(([k, c]) => `<option value="${k}">${esc(c.nome)} (${esc(c.habitantes)})</option>`).join("")
+          + `<option value="todas">Todas as cidades</option>`;
+        sel.value = state.cidade;
+        renderTudo();
+      }
+      init();
+    </script>
+  </body>
+</html>

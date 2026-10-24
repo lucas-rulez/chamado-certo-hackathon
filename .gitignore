@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+*secret*
+*token*
+credentials*.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Large data files
+*.csv
+*.xlsx
+*.sqlite
+*.db
+*.zip
+*.tar.gz
+*.log

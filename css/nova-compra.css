@@ -1,0 +1,505 @@
+.block-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  border-radius: 0.5rem;
+  padding: 0.125rem 0.25rem;
+}
+
+.block-item.dragging {
+  opacity: 0.4;
+}
+
+.block-item.drag-over-top {
+  box-shadow: inset 0 2px 0 0 var(--accent);
+}
+
+.block-item.drag-over-bottom {
+  box-shadow: inset 0 -2px 0 0 var(--accent);
+}
+
+.block-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding-top: 0.375rem;
+  opacity: 0;
+  transition: opacity 120ms ease;
+  flex-shrink: 0;
+}
+
+.block-item:hover .block-controls {
+  opacity: 1;
+}
+
+.drag-handle {
+  cursor: grab;
+  color: #a1a1aa;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.block-delete {
+  color: #a1a1aa;
+  cursor: pointer;
+}
+
+.block-delete:hover {
+  color: #ef4444;
+}
+
+.block-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.block-text {
+  min-height: 1.75rem;
+  padding: 0.375rem 0.25rem;
+  border-radius: 0.375rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #18181b;
+  outline: none;
+}
+
+.block-text:focus {
+  background-color: rgba(61, 95, 255, 0.04);
+}
+
+.block-text:empty:before {
+  content: attr(data-placeholder);
+  color: #a1a1aa;
+  pointer-events: none;
+}
+
+.block-image {
+  border-radius: 0.5rem;
+  border: 1px dashed #d4d4d8;
+  padding: 1rem;
+}
+
+.block-image img {
+  max-width: 100%;
+  border-radius: 0.375rem;
+  display: block;
+}
+
+.block-image input[type="text"] {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 0.8125rem;
+  color: #52525b;
+  outline: none;
+}
+
+.block-image input[type="text"]::placeholder {
+  color: #a1a1aa;
+}
+
+.block-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.block-table td {
+  border: 1px solid #e4e4e7;
+  padding: 0.5rem 0.625rem;
+  min-width: 4rem;
+  outline: none;
+}
+
+.block-table td:focus {
+  background-color: rgba(61, 95, 255, 0.04);
+}
+
+.block-table-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.block-table-actions button {
+  font-size: 0.75rem;
+  color: #71717a;
+  border: 1px solid #e4e4e7;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.block-table-actions button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.regua-item {
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+/* Campo curto (label + valor em uma linha, estilo formulário) */
+.block-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.375rem 0.25rem;
+}
+
+.block-field-label {
+  flex: 0 0 auto;
+  min-width: 210px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #71717a;
+}
+
+.block-field-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-bottom: 1px solid #e4e4e7;
+  background: transparent;
+  font-size: 0.875rem;
+  color: #18181b;
+  padding: 0.25rem 0.125rem;
+  outline: none;
+}
+
+.block-field-input:focus {
+  border-color: var(--accent);
+}
+
+.block-field-input::placeholder {
+  color: #a1a1aa;
+}
+
+/* Título de seção (label fixa do template) */
+.block-titulo {
+  padding: 0.75rem 0.25rem 0.25rem;
+}
+
+.block-titulo-texto {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #27272a;
+  line-height: 1.4;
+}
+
+/* Atalho "Adicionar conteúdo" — elemento independente, ancorado ao final da seção.
+   O padding-left reproduz o recuo do texto dos blocos normais (que ganham espaço à
+   esquerda para a alça de arrastar + lixeira, ausentes aqui). */
+.secao-add-wrapper {
+  padding: 0.125rem 0.25rem 0.625rem 2.75rem;
+}
+
+.block-titulo-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px dashed rgba(61, 95, 255, 0.35);
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+
+.block-titulo-add:hover {
+  background-color: rgba(61, 95, 255, 0.06);
+}
+
+/* Seleção única (opções fixas do template — só marcar) */
+.block-selecao {
+  border: 1px solid #e4e4e7;
+  border-radius: 0.625rem;
+  background-color: #fafafa;
+  padding: 0.75rem 0.75rem 0.5rem;
+}
+
+.block-selecao-titulo {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #27272a;
+  margin-bottom: 0.375rem;
+}
+
+.selecao-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.selecao-opcao {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  color: #52525b;
+}
+
+.selecao-opcao:hover {
+  background-color: #ffffff;
+}
+
+.selecao-opcao.selecionado {
+  color: #18181b;
+  font-weight: 500;
+}
+
+.selecao-marcador {
+  position: relative;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 2px solid #d4d4d8;
+}
+
+.selecao-opcao.selecionado .selecao-marcador {
+  border-color: var(--accent);
+}
+
+.selecao-opcao.selecionado .selecao-marcador::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 9999px;
+  background-color: var(--accent);
+}
+
+.tabela-cabecalho td {
+  font-weight: 600;
+  background-color: #f4f4f5;
+}
+
+/* Tabela "5. Quantidade" do DFD: largura das colunas fixa (colgroup), independente
+   do quanto for digitado — o texto quebra a linha em vez de alargar a coluna. */
+.tabela-dfd-quantidade {
+  table-layout: fixed;
+}
+
+.tabela-dfd-quantidade td {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* Seleção horizontal (usada dentro do bloco de Risco: categoria/probabilidade/impacto) */
+.selecao-opcoes.horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.selecao-opcoes.horizontal .selecao-opcao {
+  width: auto;
+}
+
+/* Bloco "Risco" (Matriz de Gerenciamento de Riscos) */
+.risco-card {
+  width: 100%;
+  border: 1px solid #e4e4e7;
+  border-radius: 0.625rem;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.risco-numero {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background-color: #3f3f46;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.risco-selecao-grupo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  border-top: 1px solid #f0f0f1;
+}
+
+.risco-selecao-label {
+  flex: 0 0 auto;
+  min-width: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #52525b;
+}
+
+.risco-subtabela {
+  padding: 0.75rem 0.875rem;
+  border-top: 1px solid #f0f0f1;
+}
+
+.risco-subtabela-titulo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #52525b;
+  margin-bottom: 0.375rem;
+}
+
+.risco-id-col {
+  width: 2.25rem;
+  text-align: center;
+  color: #a1a1aa;
+}
+
+td.risco-id-col {
+  font-weight: 500;
+  background-color: #fafafa;
+}
+
+.risco-acoes-col {
+  width: 2.75rem;
+  text-align: center;
+}
+
+.risco-ia-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  color: var(--accent);
+  background-color: transparent;
+  transition: background-color 150ms ease;
+}
+
+.risco-ia-btn:hover {
+  background-color: #ede9ed;
+}
+
+/* Box "anti-noob" — perguntas-chave exibidas quando o parágrafo é genérico demais.
+   Recuo alinhado ao mesmo texto do bloco (mesma lógica do .secao-add-wrapper). */
+.anti-noob-box {
+  margin-top: 0.5rem;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  border: 1px solid #fecaca;
+  background-color: #fef2f2;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  animation: anti-noob-entrada 320ms ease;
+  transform-origin: top;
+}
+
+@keyframes anti-noob-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+.anti-noob-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #b91c1c;
+}
+
+.anti-noob-perguntas {
+  margin-top: 0.5rem;
+  padding-left: 1.125rem;
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  color: #7f1d1d;
+}
+
+.anti-noob-exemplo {
+  margin-top: 0.625rem;
+  font-size: 0.8125rem;
+  color: #7f1d1d;
+  background-color: #ffffff;
+  border: 1px dashed #fca5a5;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.625rem;
+}
+
+.anti-noob-exemplo span {
+  font-weight: 700;
+}
+
+/* Box do fallback "computadores" — fluxo guiado (uso -> configuração) em vez do box
+   estático do anti-noob. Tom accent/neutro (é uma sugestão, não um alerta de erro),
+   mesmo recuo e animação de entrada do .anti-noob-box. */
+.fallback-computadores-box {
+  margin-top: 0.5rem;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  border: 1px solid var(--accent);
+  background-color: #f6f4f6;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  animation: anti-noob-entrada 320ms ease;
+  transform-origin: top;
+}
+
+.fallback-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.fallback-aviso {
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  color: #52525b;
+}
+
+.fallback-opcoes {
+  margin-top: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.fallback-opcao {
+  text-align: left;
+  font-size: 0.8125rem;
+  color: var(--accent);
+  background-color: #ffffff;
+  border: 1px solid #d2c9d3;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.625rem;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.fallback-opcao:hover {
+  background-color: #ede9ed;
+  border-color: var(--accent);
+}
+
+.fallback-carregando {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #52525b;
+}
